@@ -1,0 +1,107 @@
+<hlm-dialog>
+    <button brnDialogTrigger hlmBtn size="sm">
+        <ng-icon hlm size="sm" name="lucidePlus" class="mr-2" />
+        Novo Colaborador
+    </button>
+
+    <hlm-dialog-content class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto" *brnDialogContent="let ctx">
+        <hlm-dialog-header>
+            <h3 hlmDialogTitle>Cadastrar Novo Colaborador</h3>
+            <p hlmDialogDescription>
+                Preencha os dados pessoais e contratuais do novo funcionário.
+            </p>
+        </hlm-dialog-header>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid gap-6 py-4">
+
+            <div formGroupName="person">
+                <h4 class="text-sm font-semibold mb-3 text-slate-500 border-b pb-1">Dados Pessoais</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="grid gap-2">
+                        <label hlmLabel for="name">Nome Completo</label>
+                        <input hlmInput id="name" formControlName="name" placeholder="Ex: João da Silva" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="cpf">CPF</label>
+                        <input hlmInput id="cpf" formControlName="cpf" placeholder="000.000.000-00" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="birthday">Data de Nascimento</label>
+                        <input hlmInput id="birthday" type="date" formControlName="birthday" />
+                    </div>
+                    <div class="grid gap-2">
+                        <!-- @TODO alterar para SELECT -->
+                        <label hlmLabel for="gender">Gênero</label>
+                        <input hlmInput id="gender" formControlName="gender" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="phone">Celular</label>
+                        <input hlmInput id="phone" formControlName="number" placeholder="(11) 99999-9999" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="cep">CEP</label>
+                        <input hlmInput id="cep" formControlName="cep" />
+                    </div>
+                    <div class="col-span-2 grid gap-2">
+                        <label hlmLabel for="address">Endereço</label>
+                        <input hlmInput id="address" formControlName="address" />
+                    </div>
+                </div>
+            </div>
+
+            <div formGroupName="user">
+                <h4 class="text-sm font-semibold mb-3 text-slate-500 border-b pb-1">Acesso ao Sistema</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="grid gap-2">
+                        <label hlmLabel for="email">E-mail Corporativo</label>
+                        <input hlmInput id="email" type="email" formControlName="email"
+                            placeholder="nome@empresa.com" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="password">Senha Inicial</label>
+                        <input hlmInput id="password" type="password" formControlName="password" />
+                    </div>
+                </div>
+            </div>
+
+            <div formGroupName="employee">
+                <h4 class="text-sm font-semibold mb-3 text-slate-500 border-b pb-1">Dados Contratuais</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="grid gap-2">
+                        <label hlmLabel for="jobTitle">Cargo</label>
+                        <input hlmInput id="jobTitle" formControlName="jobTitle" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="department">Departamento</label>
+                        <!-- <input hlmInput id="department" formControlName="department" /> -->
+                        <brn-select formControlName="department" class="inline-block" placeholder="Selecione uma opção">
+                            <hlm-select-trigger>
+                                <hlm-select-value />
+                            </hlm-select-trigger>
+                            <hlm-select-content class="w-56">
+                                @for(item of department; track item){
+                                    <hlm-option [value]="item" >{{item}}</hlm-option>
+                                }
+                            </hlm-select-content>
+                        </brn-select>
+
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="hiringDate">Data de Contratação</label>
+                        <input hlmInput id="hiringDate" type="date" formControlName="hiringDate" />
+                    </div>
+                    <div class="grid gap-2">
+                        <label hlmLabel for="leadership">Cargo de Liderança</label>
+                        <hlm-checkbox id="leadership" formControlName="leadership" />
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+        <hlm-dialog-footer>
+            <button hlmBtn variant="outline" (click)="ctx.close()">Cancelar</button>
+            <button hlmBtn (click)="onSubmit()">Salvar Colaborador</button>
+        </hlm-dialog-footer>
+    </hlm-dialog-content>
+</hlm-dialog>

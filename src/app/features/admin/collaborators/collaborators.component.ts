@@ -5,11 +5,14 @@ import { HlmIcon } from '@spartan-ng/helm/icon';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePlus } from '@ng-icons/lucide';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { CreateCollaboratorDialogComponent } from './create-collaborator-dialog/create-collaborator-dialog.component';
 
 
 @Component({
   selector: 'app-collaborators',
-  imports: [StatsCardComponent, HeaderTextComponent, HlmButtonImports, NgIcon, HlmIcon,],
+  imports: [StatsCardComponent, HeaderTextComponent, HlmButtonImports, 
+    // NgIcon, HlmIcon, 
+    CreateCollaboratorDialogComponent],
   templateUrl: './collaborators.component.html',
   styleUrl: './collaborators.component.css',
   providers: [provideIcons({ lucidePlus })]
