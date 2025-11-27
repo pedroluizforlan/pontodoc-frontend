@@ -1,12 +1,43 @@
 import { Component } from '@angular/core';
 import { StatsCardComponent } from '../../../shared/components/stats-card/stats-card.component';
+import { HeaderTextComponent } from "../../../shared/components/header-text/header-text.component";
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucidePlus } from '@ng-icons/lucide';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+
 
 @Component({
   selector: 'app-collaborators',
-  imports: [StatsCardComponent],
+  imports: [StatsCardComponent, HeaderTextComponent, HlmButtonImports, NgIcon, HlmIcon,],
   templateUrl: './collaborators.component.html',
-  styleUrl: './collaborators.component.css'
+  styleUrl: './collaborators.component.css',
+  providers: [provideIcons({ lucidePlus })]
 })
 export class CollaboratorsComponent {
+
+  fake = [
+  {
+    "title": "Total de Colaboradores", 
+    "stats": "5", 
+    "data": "8"
+  },
+  {
+    "title": "Ativos", 
+    "stats": "3", 
+    "data": "5"
+  },
+  {
+    "title": "Pendentes", 
+    "stats": "1", 
+    "data": "-2"
+  },
+  {
+    "title": "Taxa de Assinatura", 
+    "stats": "85%", 
+    "data": "12"
+  }
+];
+
 
 }

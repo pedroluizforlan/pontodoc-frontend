@@ -1,1 +1,15 @@
-<app-stats-card/>
+<div class="flex flex-row items-center justify-between">
+    <app-header-text title="Colaboradores" subtitle="Gerencie colaboradores e acompanhe o status de suas assinaturas"></app-header-text>
+    <button hlmBtn size="sm">
+			<ng-icon hlm size="sm" name="lucidePlus" />
+			Novo Colaborador
+		</button>
+
+</div>
+
+<div class="flex flex-row items-center gap-4 justify-around">
+    @for(dado of fake; track dado){
+    <app-stats-card [title]="dado.title" [stats]="dado.stats" [data]="dado.data"></app-stats-card>
+}
+</div>
+

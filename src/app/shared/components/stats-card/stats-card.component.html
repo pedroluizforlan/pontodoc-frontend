@@ -1,14 +1,16 @@
-
 <section hlmCard>
   <div hlmCardHeader>
     <h3 hlmCardTitle class="font-semibold text-base text-gray-400">{{title}}</h3>
     <!-- <p hlmCardDescription class="text-3xl font-medium">Card Description</p> -->
-		<div hlmCardAction>
-            <!-- @if(){
+    <div hlmCardAction>
+      <div class="flex flex-row items-center">
+        @if(showIcon){
+         <ng-icon hlm size="sm" class="mr-1 h-5 w-5" [ngClass]="color" [name]="icon" />
+        }
+        <p [ngClass]="color">{{ percent }}</p>
+      </div>
 
-            } -->
-            {{percent}}
-        </div>
+    </div>
   </div>
   <p hlmCardContent class="text-3xl font-bold">{{ stats }}</p>
 </section>

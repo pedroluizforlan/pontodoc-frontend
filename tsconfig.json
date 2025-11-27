@@ -24,6 +24,9 @@
       ],
       "@spartan-ng/helm/card": [
         "./libs/ui/card/src/index.ts"
+      ],
+      "@spartan-ng/helm/button": [
+        "./libs/ui/button/src/index.ts"
       ]
     }
   },
