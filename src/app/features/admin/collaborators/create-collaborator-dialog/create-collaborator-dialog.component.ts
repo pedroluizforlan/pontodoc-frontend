@@ -1,73 +1,165 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgIcon, NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucidePlus, lucideSave } from '@ng-icons/lucide';
-import { BrnDialogImports } from '@spartan-ng/brain/dialog';
+import { Component, EventEmitter, inject, Input, Output, viewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { BrnDialogImports, BrnDialog } from '@spartan-ng/brain/dialog';
 import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmDialogImports } from '@spartan-ng/helm/dialog';
-import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmInputImports } from '@spartan-ng/helm/input';
 import { HlmLabelImports } from '@spartan-ng/helm/label';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { HlmCheckboxImports } from '@spartan-ng/helm/checkbox';
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
+import { CommonModule } from '@angular/common';
 import { CollaboratorsService } from '../../../../services/collaborators.service';
-import { Collaborator, Employee, Person, User } from '../../../../models/collaborator.model';
+import { Collaborator } from '../../../../models/collaborator.model';
 
 
 @Component({
   selector: 'app-create-collaborator-dialog',
   imports: [
     ReactiveFormsModule,
-    NgIcon, HlmIcon,
+    CommonModule,
     BrnDialogImports,
     HlmDialogImports,
-    HlmLabelImports, 
-    HlmInputImports, 
+    HlmLabelImports,
+    HlmInputImports,
     HlmButtonImports,
     HlmSelectImports,
     BrnSelectImports,
-    HlmCheckboxImports
+    HlmCheckboxImports,
+    HlmSpinnerImports,
   ],
   templateUrl: './create-collaborator-dialog.component.html',
   styleUrl: './create-collaborator-dialog.component.css',
-  providers: [provideIcons({ lucidePlus, lucideSave })]
 })
-export class CreateCollaboratorDialogComponent {
-private _fb = inject(FormBuilder);
+export class CreateCollaboratorDialogComponent implements OnChanges {
+  private dialog = viewChild(BrnDialog);
+
+  @Input() isOpen = false;
+  @Input() isEditMode = false;
+  @Input() initialData: Collaborator | null = null;
+  @Input() title = 'Cadastrar Novo Colaborador';
+
+  @Output() isOpenChange = new EventEmitter<boolean>();
+  @Output() collaboratorSaved = new EventEmitter<Collaborator>();
+
+  private _fb = inject(FormBuilder);
+  isLoading = false;
+
+  private cpfValidator = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) return null;
+    const numbers = value.replace(/\D/g, '');
+    return numbers.length === 11 ? null : { cpfInvalid: true };
+  };
+
+  private phoneValidator = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) return null;
+    const numbers = value.replace(/\D/g, '');
+    return numbers.length === 11 ? null : { phoneInvalid: true };
+  };
+
+  private cepValidator = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) return null;
+    const numbers = value.replace(/\D/g, '');
+    return numbers.length === 8 ? null : { cepInvalid: true };
+  };
+
+  private passwordMatchValidator = (control: AbstractControl): ValidationErrors | null => {
+    const password = control.get('password');
+    const passwordConfirm = control.get('passwordConfirm');
+
+    if (!password || !passwordConfirm) return null;
+    if (!password.value && !passwordConfirm.value) return null;
+
+    return password.value === passwordConfirm.value ? null : { passwordMismatch: true };
+  };
 
   department = ["FINANCEIRO", "DESENVOLVIMENTO", "CRIAÇÃO", "PLANEJAMENTO E MÍDIA", "ATENDIMENTO", "TRÁFEGO", "COMERCIAL", "SITES", "CUSTOMER EXPIRENCE", "RECURSOS HUMANOS"]
 
-  // Espelha exatamente a estrutura do seu JSON
   form = this._fb.group({
     person: this._fb.group({
       name: ['', Validators.required],
       birthday: ['', Validators.required],
-      cpf: ['', [Validators.required, Validators.minLength(11)]],
+      cpf: ['', [Validators.required, this.cpfValidator]],
       address: ['', Validators.required],
-      cep: ['', Validators.required],
-      gender: ['Masculino', Validators.required], // Idealmente um Select
-      number: ['', Validators.required],
+      cep: ['', [Validators.required, this.cepValidator]],
+      gender: ['', Validators.required],
+      number: ['', [Validators.required, this.phoneValidator]],
     }),
     user: this._fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['Mudar123!', Validators.required], // Senha padrão ou gerada
-      useType: ['EMPLOYEE'], // Fixo
-      verifiedEmail: [false], // Fixo
-    }),
+      password: [''],
+      passwordConfirm: [''],
+      useType: ['EMPLOYEE'],
+      verifiedEmail: [false],
+    }, { validators: this.passwordMatchValidator }),
     employee: this._fb.group({
       jobTitle: ['', Validators.required],
-      department: ['', Validators.required], // Idealmente um Select
-      hiringDate: [],
-      managerId: [null],
+      department: ['', Validators.required],
+      hiringDate: [''],
+      managerId: [null as number | null],
       leadership: [false],
     }),
   });
 
+  ngOnInit() {
+    this.updatePasswordValidators();
+  }
+
   constructor(
     private collaboratorService: CollaboratorsService
-  ){
+  ){}
 
+  private updatePasswordValidators(): void {
+    const passwordControl = this.form.get('user.password');
+    const passwordConfirmControl = this.form.get('user.passwordConfirm');
+
+    if (this.isEditMode) {
+      passwordControl?.setValidators([]);
+      passwordConfirmControl?.setValidators([]);
+    } else {
+      passwordControl?.setValidators([Validators.required]);
+      passwordConfirmControl?.setValidators([Validators.required]);
+    }
+
+    passwordControl?.updateValueAndValidity({ emitEvent: false });
+    passwordConfirmControl?.updateValueAndValidity({ emitEvent: false });
+    this.form.get('user')?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isOpen']) {
+      if (this.isOpen) {
+        this.dialog()?.open();
+      } else {
+        this.dialog()?.close();
+      }
+    }
+    if (changes['isEditMode']) {
+      this.updatePasswordValidators();
+    }
+    if (changes['initialData'] && this.isEditMode && this.initialData) {
+      this.form.patchValue({
+        person: this.initialData.person,
+        user: {
+          email: this.initialData.user.email,
+          password: '',
+          passwordConfirm: '',
+          useType: this.initialData.user.useType,
+          verifiedEmail: this.initialData.user.verifiedEmail
+        },
+        employee: {
+          jobTitle: this.initialData.employee.jobTitle,
+          department: this.initialData.employee.department,
+          hiringDate: this.initialData.employee.hiringDate || '',
+          managerId: this.initialData.employee.managerId,
+          leadership: this.initialData.employee.leadership
+        }
+      });
+    }
   }
 
 
@@ -103,21 +195,37 @@ private createCollaborator(payload: any): Collaborator {
 
 
   onSubmit() {
-    console.log("ta batendo")
     if (this.form.valid) {
       const payload = this.form.value;
-
       const collaborator = this.createCollaborator(payload);
-      this.collaboratorService.create(collaborator).subscribe({
-        next: (response) => {
-          console.log('Colaborador criado com sucesso:', response);
-        },
-        error: (error) => {
-          console.error('Erro ao criar colaborador:', error);
-        }
-      });
+
+      this.isLoading = true;
+
+      if (this.isEditMode) {
+        collaborator.id = this.initialData?.id;
+        this.collaboratorSaved.emit(collaborator);
+        this.close();
+        this.isLoading = false;
+      } else {
+        this.collaboratorService.create(collaborator).subscribe({
+          next: (response) => {
+            console.log('Colaborador criado com sucesso:', response);
+            this.close();
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Erro ao criar colaborador:', error);
+            this.isLoading = false;
+          }
+        });
+      }
     } else {
       this.form.markAllAsTouched();
     }
+  }
+
+  close() {
+    this.isOpenChange.emit(false);
+    this.dialog()?.close();
   }
 }

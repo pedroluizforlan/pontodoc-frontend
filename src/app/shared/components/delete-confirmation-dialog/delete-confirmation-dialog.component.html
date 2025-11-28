@@ -1,0 +1,20 @@
+<hlm-dialog>
+  <button brnDialogTrigger hlmBtn hidden id="trigger-delete"></button>
+
+  <hlm-dialog-content *brnDialogContent="let ctx" class="max-w-md">
+    <hlm-dialog-header>
+      <h3 hlmDialogTitle>{{ title }}</h3>
+    </hlm-dialog-header>
+    <div class="p-6">
+      <p class="text-sm text-gray-600">{{ message }}</p>
+    </div>
+    <hlm-dialog-footer>
+      <button hlmBtn variant="ghost" (click)="ctx.close()">
+        Cancelar
+      </button>
+      <button hlmBtn variant="destructive" (click)="onConfirm(); ctx.close()">
+        Confirmar
+      </button>
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

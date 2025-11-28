@@ -7,14 +7,14 @@ import { lucidePlus } from '@ng-icons/lucide';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { CreateCollaboratorDialogComponent } from './create-collaborator-dialog/create-collaborator-dialog.component';
 import { CollaboratorsService } from '../../../services/collaborators.service';
-import { Observable } from 'rxjs';
+
 import { Collaborator } from '../../../models/collaborator.model';
 import { CollaboratorsTableComponent } from "./collaborators-table/collaborators-table.component";
 
 @Component({
   selector: 'app-collaborators',
   imports: [StatsCardComponent, HeaderTextComponent, HlmButtonImports,
-    // NgIcon, HlmIcon, 
+    NgIcon, HlmIcon, 
     CreateCollaboratorDialogComponent, CollaboratorsTableComponent],
   templateUrl: './collaborators.component.html',
   styleUrl: './collaborators.component.css',
@@ -24,6 +24,7 @@ export class CollaboratorsComponent implements OnInit{
 
   private collaboratorsService = inject(CollaboratorsService);
   collaborators!:Collaborator[];
+  isCreateModalOpen = false;
 
   fake = [
   {
@@ -52,6 +53,10 @@ export class CollaboratorsComponent implements OnInit{
     this.collaboratorsService.findAll().subscribe(response => {
       this.collaborators = response;
     });
+  }
+
+  openCreateModal() {
+    this.isCreateModalOpen = true;
   }
 
 }

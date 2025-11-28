@@ -1,12 +1,14 @@
 <hlm-dialog>
-    <button brnDialogTrigger hlmBtn size="sm">
-        <ng-icon hlm size="sm" name="lucidePlus" class="mr-2" />
-        Novo Colaborador
-    </button>
+    <button brnDialogTrigger hlmBtn hidden id="trigger-create"></button>
 
-    <hlm-dialog-content class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto" *brnDialogContent="let ctx">
+    <hlm-dialog-content *brnDialogContent="let ctx" class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto relative">
+      @if(isLoading) {
+        <div class="absolute inset-0 bg-white bg-opacity-50 rounded-md flex items-center justify-center z-10">
+          <hlm-spinner class="text-lg" />
+        </div>
+      }
         <hlm-dialog-header>
-            <h3 hlmDialogTitle>Cadastrar Novo Colaborador</h3>
+            <h3 hlmDialogTitle >{{ title }}</h3>
             <p hlmDialogDescription>
                 Preencha os dados pessoais e contratuais do novo funcionário.
             </p>
@@ -20,31 +22,71 @@
                     <div class="grid gap-2">
                         <label hlmLabel for="name">Nome Completo</label>
                         <input hlmInput id="name" formControlName="name" placeholder="Ex: João da Silva" />
+                        @if(form.get('person.name')?.hasError('required') && form.get('person.name')?.touched) {
+                          <p class="text-xs text-red-500">Nome é obrigatório</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="cpf">CPF</label>
                         <input hlmInput id="cpf" formControlName="cpf" placeholder="000.000.000-00" />
+                        @if(form.get('person.cpf')?.hasError('required') && form.get('person.cpf')?.touched) {
+                          <p class="text-xs text-red-500">CPF é obrigatório</p>
+                        }
+                        @if(form.get('person.cpf')?.hasError('cpfInvalid') && form.get('person.cpf')?.touched) {
+                          <p class="text-xs text-red-500">CPF deve ter 11 dígitos</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="birthday">Data de Nascimento</label>
                         <input hlmInput id="birthday" type="date" formControlName="birthday" />
+                        @if(form.get('person.birthday')?.hasError('required') && form.get('person.birthday')?.touched) {
+                          <p class="text-xs text-red-500">Data de nascimento é obrigatória</p>
+                        }
                     </div>
                     <div class="grid gap-2">
-                        <!-- @TODO alterar para SELECT -->
                         <label hlmLabel for="gender">Gênero</label>
-                        <input hlmInput id="gender" formControlName="gender" />
+                        <brn-select formControlName="gender" placeholder="Selecione uma opção">
+                            <hlm-select-trigger>
+                                <hlm-select-value />
+                            </hlm-select-trigger>
+                            <hlm-select-content class="w-56">
+                                <hlm-option value="masculino">Homem</hlm-option>
+                                <hlm-option value="feminino">Mulher</hlm-option>
+                                <hlm-option value="nao-binario">Não Binário</hlm-option>
+                                <hlm-option value="outro">Outro</hlm-option>
+                                <hlm-option value="prefiro-nao-informar">Prefiro não informar</hlm-option>
+                            </hlm-select-content>
+                        </brn-select>
+                        @if(form.get('person.gender')?.hasError('required') && form.get('person.gender')?.touched) {
+                          <p class="text-xs text-red-500">Gênero é obrigatório</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="phone">Celular</label>
                         <input hlmInput id="phone" formControlName="number" placeholder="(11) 99999-9999" />
+                        @if(form.get('person.number')?.hasError('required') && form.get('person.number')?.touched) {
+                          <p class="text-xs text-red-500">Celular é obrigatório</p>
+                        }
+                        @if(form.get('person.number')?.hasError('phoneInvalid') && form.get('person.number')?.touched) {
+                          <p class="text-xs text-red-500">Celular deve ter 11 dígitos</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="cep">CEP</label>
                         <input hlmInput id="cep" formControlName="cep" />
+                        @if(form.get('person.cep')?.hasError('required') && form.get('person.cep')?.touched) {
+                          <p class="text-xs text-red-500">CEP é obrigatório</p>
+                        }
+                        @if(form.get('person.cep')?.hasError('cepInvalid') && form.get('person.cep')?.touched) {
+                          <p class="text-xs text-red-500">CEP deve ter 8 dígitos</p>
+                        }
                     </div>
                     <div class="col-span-2 grid gap-2">
                         <label hlmLabel for="address">Endereço</label>
                         <input hlmInput id="address" formControlName="address" />
+                        @if(form.get('person.address')?.hasError('required') && form.get('person.address')?.touched) {
+                          <p class="text-xs text-red-500">Endereço é obrigatório</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -56,10 +98,30 @@
                         <label hlmLabel for="email">E-mail Corporativo</label>
                         <input hlmInput id="email" type="email" formControlName="email"
                             placeholder="nome@empresa.com" />
+                        @if(form.get('user.email')?.hasError('required') && form.get('user.email')?.touched) {
+                          <p class="text-xs text-red-500">E-mail é obrigatório</p>
+                        }
+                        @if(form.get('user.email')?.hasError('email') && form.get('user.email')?.touched) {
+                          <p class="text-xs text-red-500">E-mail inválido</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="password">Senha Inicial</label>
                         <input hlmInput id="password" type="password" formControlName="password" />
+                        @if(form.get('user.password')?.hasError('required') && form.get('user.password')?.touched) {
+                          <p class="text-xs text-red-500">Senha é obrigatória</p>
+                        }
+                    </div>
+                    <div class="grid gap-2 col-span-2">
+                        <label hlmLabel for="passwordConfirm">Confirmar Senha</label>
+                        <input hlmInput id="passwordConfirm" type="password" formControlName="passwordConfirm"
+                            placeholder="Confirme a senha" />
+                        @if(form.get('user.passwordConfirm')?.hasError('required') && form.get('user.passwordConfirm')?.touched) {
+                          <p class="text-xs text-red-500">Confirmação de senha é obrigatória</p>
+                        }
+                        @if(form.get('user')?.hasError('passwordMismatch') && form.get('user')?.touched) {
+                          <p class="text-xs text-red-500">As senhas não correspondem</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -70,6 +132,9 @@
                     <div class="grid gap-2">
                         <label hlmLabel for="jobTitle">Cargo</label>
                         <input hlmInput id="jobTitle" formControlName="jobTitle" />
+                        @if(form.get('employee.jobTitle')?.hasError('required') && form.get('employee.jobTitle')?.touched) {
+                          <p class="text-xs text-red-500">Cargo é obrigatório</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="department">Departamento</label>
@@ -84,7 +149,9 @@
                                 }
                             </hlm-select-content>
                         </brn-select>
-
+                        @if(form.get('employee.department')?.hasError('required') && form.get('employee.department')?.touched) {
+                          <p class="text-xs text-red-500">Departamento é obrigatório</p>
+                        }
                     </div>
                     <div class="grid gap-2">
                         <label hlmLabel for="hiringDate">Data de Contratação</label>
@@ -100,8 +167,8 @@
         </form>
 
         <hlm-dialog-footer>
-            <button hlmBtn variant="outline" (click)="ctx.close()">Cancelar</button>
-            <button hlmBtn (click)="onSubmit()">Salvar Colaborador</button>
+            <button hlmBtn variant="outline" (click)="close()">Cancelar</button>
+            <button hlmBtn (click)="onSubmit()">{{ isEditMode ? 'Atualizar' : 'Salvar' }} Colaborador</button>
         </hlm-dialog-footer>
     </hlm-dialog-content>
 </hlm-dialog>

@@ -1,15 +1,23 @@
 <div class="flex flex-row items-center justify-between">
     <app-header-text title="Colaboradores" subtitle="Gerencie colaboradores e acompanhe o status de suas assinaturas"></app-header-text>
-    <app-create-collaborator-dialog></app-create-collaborator-dialog>
-
+    <button hlmBtn (click)="openCreateModal()">
+      <ng-icon hlm class="w-4 h-4 mr-2" name="lucidePlus" />
+      Adicionar Colaborador
+    </button>
 </div>
 
-<div class="flex flex-row items-center gap-4 justify-around">
+<app-create-collaborator-dialog
+    title="Cadastrar Novo Colaborador"
+    [isEditMode]="false"
+    [initialData]="null"
+    [(isOpen)]="isCreateModalOpen"
+></app-create-collaborator-dialog>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     @for(dado of fake; track dado){
     <app-stats-card [title]="dado.title" [stats]="dado.stats" [data]="dado.data"></app-stats-card>
 }
 </div>
-
 
 <app-collaborators-table [collaborators]="collaborators" ></app-collaborators-table>
 
