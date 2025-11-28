@@ -1,18 +1,20 @@
 <div class="flex items-center justify-center min-h-screen bg-slate-50">
       <div class="w-full max-w-sm p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-6 text-center">Login PontoDoc</h2>
+        <img class="mx-auto mb-4 w-32" src="images/logo_with_icon.svg"/>
+        <h2 class="text-2xl font-bold mb-2 text-center">Acesso Administrativo</h2>
+        <h2 class="text-sm font-normal text-gray-400 mb-6 text-center ">Acesso somente para usuários administrativos</h2>
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           
-          <label hlmLabel for="email">E-mail</label>
-          <input hlmInput id="email" type="email" formControlName="email" class="mb-4" />
+          <label hlmLabel class="text-sm" for="email">Email</label>
+          <input hlmInput id="email" type="email" formControlName="email" class="mb-4" placeholder="example@email.com"/>
           
-          <label hlmLabel for="password">Senha</label>
-          <input hlmInput id="password" type="password" formControlName="password" class="mb-6" />
+          <label hlmLabel class="text-sm" for="password">Senha</label>
+          <input hlmInput id="password" type="password" formControlName="password" class="mb-6" placeholder="••••••••••"/>
 
           <button hlmBtn [disabled]="loginForm.invalid" class="w-full">Entrar</button>
         </form>
         @if (errorMessage) {
-            <p class="text-red-500 mt-4 text-center">{{ errorMessage }}</p>
+            <p class="text-red-500 mt-4 text-center font-medium">{{ errorMessage }}</p>
         }
       </div>
     </div>

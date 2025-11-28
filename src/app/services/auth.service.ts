@@ -4,6 +4,10 @@ import { Observable, tap } from 'rxjs';
 import { LoginRequest } from '../models/auth.model';
 import { environment } from '../../environments/environments.local';
 
+interface AuthResponse {
+  token:string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,11 +15,9 @@ export class AuthService {
 private http = inject(HttpClient);
   private readonly API_URL = `${environment.apiUrl}/auth`;
 
-  authenticate(credentials: LoginRequest): Observable<string> {
-    return this.http.post(this.API_URL, credentials, { responseType: 'text' }).pipe(
-      tap(token => {
-        this.saveToken(token);
-      })
+  authenticate(credentials: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(this.API_URL, credentials, { responseType: 'json' }).pipe(
+      tap(response => this.saveToken(response.token))
     );
   }
 

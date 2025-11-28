@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { StatsCardComponent } from '../../../shared/components/stats-card/stats-card.component';
 import { HeaderTextComponent } from "../../../shared/components/header-text/header-text.component";
 import { HlmIcon } from '@spartan-ng/helm/icon';
@@ -6,18 +6,24 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePlus } from '@ng-icons/lucide';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { CreateCollaboratorDialogComponent } from './create-collaborator-dialog/create-collaborator-dialog.component';
-
+import { CollaboratorsService } from '../../../services/collaborators.service';
+import { Observable } from 'rxjs';
+import { Collaborator } from '../../../models/collaborator.model';
+import { CollaboratorsTableComponent } from "./collaborators-table/collaborators-table.component";
 
 @Component({
   selector: 'app-collaborators',
-  imports: [StatsCardComponent, HeaderTextComponent, HlmButtonImports, 
+  imports: [StatsCardComponent, HeaderTextComponent, HlmButtonImports,
     // NgIcon, HlmIcon, 
-    CreateCollaboratorDialogComponent],
+    CreateCollaboratorDialogComponent, CollaboratorsTableComponent],
   templateUrl: './collaborators.component.html',
   styleUrl: './collaborators.component.css',
   providers: [provideIcons({ lucidePlus })]
 })
-export class CollaboratorsComponent {
+export class CollaboratorsComponent implements OnInit{
+
+  private collaboratorsService = inject(CollaboratorsService);
+  collaborators!:Collaborator[];
 
   fake = [
   {
@@ -42,5 +48,10 @@ export class CollaboratorsComponent {
   }
 ];
 
+  async ngOnInit(): Promise<void> {
+    this.collaboratorsService.findAll().subscribe(response => {
+      this.collaborators = response;
+    });
+  }
 
 }
