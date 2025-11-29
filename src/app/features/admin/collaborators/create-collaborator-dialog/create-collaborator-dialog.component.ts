@@ -12,6 +12,7 @@ import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 import { CommonModule } from '@angular/common';
 import { CollaboratorsService } from '../../../../services/collaborators.service';
 import { Collaborator } from '../../../../models/collaborator.model';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -42,7 +43,7 @@ export class CreateCollaboratorDialogComponent implements OnChanges {
 
   @Output() isOpenChange = new EventEmitter<boolean>();
   @Output() collaboratorSaved = new EventEmitter<Collaborator>();
-
+  private router = inject(Router);
   private _fb = inject(FormBuilder);
   isLoading = false;
 
@@ -206,16 +207,20 @@ private createCollaborator(payload: any): Collaborator {
         this.collaboratorSaved.emit(collaborator);
         this.close();
         this.isLoading = false;
+
       } else {
         this.collaboratorService.create(collaborator).subscribe({
           next: (response) => {
             console.log('Colaborador criado com sucesso:', response);
             this.close();
             this.isLoading = false;
+
+            location.reload();
           },
           error: (error) => {
             console.error('Erro ao criar colaborador:', error);
             this.isLoading = false;
+            location.reload();
           }
         });
       }
